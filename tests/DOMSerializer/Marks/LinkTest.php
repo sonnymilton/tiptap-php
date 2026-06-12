@@ -247,6 +247,36 @@ test('link mark can disable rel', function () {
     expect($result)->toEqual('<a target="_blank" href="https://tiptap.dev">Example Link</a>');
 });
 
+test('link mark with non-string (array) href does not crash and is treated as disallowed', function () {
+    $document = [
+        'type' => 'doc',
+        'content' => [
+            [
+                'type' => 'text',
+                'text' => 'Example',
+                'marks' => [
+                    [
+                        'type' => 'link',
+                        'attrs' => [
+                            'href' => ['array', 'value'],
+                            'target' => '_blank',
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ];
+
+    $result = (new Editor([
+        'extensions' => [
+            new StarterKit,
+            new Link,
+        ],
+    ]))->setContent($document)->getHTML();
+
+    expect($result)->toEqual('<a target="_blank" rel="noopener noreferrer nofollow">Example</a>');
+});
+
 test('link mark can disable target', function () {
     $document = [
         'type' => 'doc',
